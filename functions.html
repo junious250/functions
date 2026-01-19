@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JB Functions ULTRA-HARD - Developed by Jean Bosco</title>
+    <style>
+        body { font-family: 'Consolas', monospace; background: #020617; color: #e2e8f0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: #0f172a; padding: 30px; border-radius: 8px; border: 1px solid #1e293b; box-shadow: 0 0 50px #000; }
+        .branding { text-align: center; border-bottom: 3px double #38bdf8; margin-bottom: 20px; padding-bottom: 10px; }
+        .branding h1 { color: #38bdf8; letter-spacing: 2px; }
+        .code-block { background: #000; color: #34d399; padding: 20px; border-radius: 4px; border: 1px solid #334155; margin: 15px 0; white-space: pre; font-size: 0.85em; overflow-x: auto; }
+        .option-btn { display: block; width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #334155; background: #1e293b; color: #cbd5e1; cursor: pointer; text-align: left; }
+        .option-btn:hover { background: #334155; border-color: #38bdf8; }
+        .wrong-first { border-color: #f59e0b !important; color: #f59e0b !important; }
+        .wrong-final { border-color: #ef4444 !important; color: #ef4444 !important; }
+        .correct-btn { border-color: #10b981 !important; color: #10b981 !important; background: #064e3b !important; }
+        #feedback { text-align: center; font-size: 1.1em; margin-top: 15px; font-weight: bold; min-height: 25px; }
+        .stats { display: flex; justify-content: space-between; color: #64748b; font-size: 0.8em; margin-bottom: 10px;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="branding">
+        <h1>JB FUNCTIONS REVISION: ULTRA-HARD</h1>
+        <p>Curated by Jean Bosco | UR-CE Engineering Standard</p>
+    </div>
+
+    <div class="stats">
+        <span><b>MODE:</b> CRITICAL ANALYSIS</span>
+        <span><b>Q:</b> <span id="q-count">1</span>/45</span>
+        <span><b>XP:</b> <span id="score">0</span></span>
+    </div>
+
+    <div id="quiz-area">
+        <h3 id="question-text"></h3>
+        <div id="code-display" class="code-block"></div>
+        <div id="options-container"></div>
+        <div id="feedback"></div>
+    </div>
+</div>
+
+<script>
+    const hardBank = [
+        // --- 15 COMPLEX OUTPUT TRACING ---
+        { q: "What is the output of this reference-heavy code?", code: "void trace(int &a, int b) { a += b; b += a; }\nint main() { int x = 5, y = 10; trace(x, y); cout << x << y; }", opts: ["1510", "1525", "1510", "510"], ans: 0 },
+        { q: "Analyze the recursive depth. What is printed?", code: "int rec(int n) { if(n <= 1) return 1; return n * rec(n-2); }\nint main() { cout << rec(5); }", opts: ["120", "15", "25", "8"], ans: 1 },
+        { q: "What is the result of this nested logic?", code: "int f(int x) { return x % 2 == 0 ? x/2 : x*3+1; }\nint main() { cout << f(f(f(3))); }", opts: ["5", "16", "8", "4"], ans: 3 },
+        { q: "Identify the output (Static Scope Challenge):", code: "int go() { static int k=2; k *= k; return k; }\nint main() { go(); cout << go(); }", opts: ["4", "16", "8", "2"], ans: 1 },
+        { q: "Trace the Boolean return:", code: "bool check(int n) { return (n > 0 && (n & (n - 1)) == 0); }\nint main() { cout << check(8) << check(7); }", opts: ["10", "11", "01", "00"], ans: 0 },
+        { q: "What is printed?", code: "void mystery(int x, int y=2, int z=3) { cout << x+y+z; }\nint main() { mystery(10, mystery(1,1,1) ? 0 : 5); }", opts: ["15", "18", "Compilation Error", "17"], ans: 2 },
+        { q: "Trace the pointer-like behavior:", code: "int main() { int a=10, b=20; int &r = a; r = b; cout << a << b; }", opts: ["1020", "2020", "2010", "Error"], ans: 1 },
+        { q: "Calculate the output:", code: "int calc(int x) { return x << 1; }\nint main() { cout << calc(calc(3)); }", opts: ["6", "9", "12", "15"], ans: 2 },
+        { q: "What is the output?", code: "int main() { int i=0; for(;i<3;i++) { static int s=0; s+=i; if(i==2) cout << s; } }", opts: ["3", "2", "6", "0"], ans: 0 },
+        { q: "Trace the global/local collision:", code: "int g = 1;\nint fn(int g) { return ::g + g; }\nint main() { int g = 5; cout << fn(10); }", opts: ["11", "15", "6", "10"], ans: 0 },
+        { q: "What is printed?", code: "int main() { cout << floor(3.9) + ceil(1.1); }", opts: ["5", "4", "6", "4.0"], ans: 1 },
+        { q: "Trace the function return:", code: "int s(int n) { return n+n; }\nint main() { int x = 2; cout << s(s(s(x))); }", opts: ["8", "16", "6", "32"], ans: 1 },
+        { q: "What is the result?", code: "int main() { int x=5; cout << (x++ + ++x); }", opts: ["10", "12", "11", "Undefined"], ans: 1 },
+        { q: "What does this return?", code: "int a(int n) { return (n==0) ? 1 : a(n-1); }\nint main() { cout << a(100); }", opts: ["100", "1", "0", "Stack Overflow"], ans: 1 },
+        { q: "Analyze output:", code: "void p(int x) { if(x>0) { p(x-1); cout << x; } }\nint main() { p(3); }", opts: ["321", "123", "3", "0"], ans: 1 },
+
+        // --- 15 FLOWCHART & PSEUDOCODE LOGIC ---
+        { cat: "Structure", q: "In a recursive flowchart, what happens to the control flow after the base case is met?", opts: ["Ends the program", "Returns to the previous call instance", "Restarts main", "Clears the diamond"], ans: 1 },
+        { cat: "Structure", q: "Which symbol combination represents a module with internal exception handling?", opts: ["Rectangle/Diamond", "Double-lined Rectangle", "Parallelogram/Oval", "None of above"], ans: 1 },
+        { cat: "Structure", q: "Pseudocode: 'Function x(ByRef n)'. What is the C++ equivalent?", opts: ["int x(int n)", "void x(int &n)", "int x(int *n)", "void x(int n)"], ans: 1 },
+        { cat: "Structure", q: "If a flowchart process contains a call to itself, this is a visualization of...?", opts: ["Infinite Loop", "Recursion", "Global Scope", "Modular Breakdown"], ans: 1 },
+        { cat: "Structure", q: "A diamond symbol with three exit paths ( <0, 0, >0 ) represents...?", opts: ["Binary Decision", "Multi-way Branching/Switch", "Function Return", "Wait State"], ans: 1 },
+        { cat: "Structure", q: "How is a 'Return Value' represented in standard modular pseudocode?", opts: ["PRINT result", "SET FunctionName = result", "RETURN result", "Both B and C"], ans: 3 },
+        { cat: "Structure", q: "In a 'Top-Down' design flowchart, what is at the very top?", opts: ["Library Functions", "The Main/Executive Module", "Variable Declarations", "Input Modules"], ans: 1 },
+        { cat: "Structure", q: "Which symbol is used for 'Library Function' calls in professional diagrams?", opts: ["Standard Rectangle", "Predefined Process (striped rectangle)", "Cylinder", "Hexagon"], ans: 1 },
+        { cat: "Structure", q: "Pseudocode: 'MODULE main() CALL sub() END MODULE'. Where is the control after sub() finishes?", opts: ["END MODULE", "The line after CALL sub()", "Starts main over", "Exits system"], ans: 1 },
+        { cat: "Structure", q: "Flowchart: A line connecting the bottom of a process to a diamond above it indicates...?", opts: ["Selection", "Iteration/Loop within a function", "Sequential flow", "Terminal point"], ans: 1 },
+        { cat: "Structure", q: "Which represents a 'Value-Returning' function in a Hierarchy Chart?", opts: ["Box with shaded corner", "Standard Box", "Box with a '?'", "Oval"], ans: 1 },
+        { cat: "Structure", q: "Pseudocode 'FOR i = 1 to length(string)'. What does length() represent?", opts: ["A User-Defined process", "An intrinsic/library function", "A loop counter", "A Boolean condition"], ans: 1 },
+        { cat: "Structure", q: "How are 'Actual Arguments' typically passed in Flowchart logic?", opts: ["Through a global table", "Annotated on the connector line to the sub-module", "Hidden from view", "In the Oval"], ans: 1 },
+        { cat: "Structure", q: "A 'Black Box' in modular design implies what about the function?", opts: ["It is empty", "We know inputs/outputs but not internal code", "It has a logic error", "It cannot return data"], ans: 1 },
+        { cat: "Structure", q: "The logic of 'Divide and Conquer' refers to...?", opts: ["Breaking tasks into smaller functions", "Removing code", "Security", "Hardware"], ans: 0 },
+
+        // --- 15 COMPLEX ELEMENTS (Scope/Advanced Theory) ---
+        { cat: "Elements", q: "What is 'Function Overloading'?", opts: ["Calling a function too many times", "Multiple functions with same name but different parameters", "A function returning two values", "Global variable conflict"], ans: 1 },
+        { cat: "Elements", q: "What is the primary risk of 'Shadowing' a variable?", opts: ["Compiler crash", "The local variable hides the global variable of the same name", "Infinite loops", "Data type mismatch"], ans: 1 },
+        { cat: "Elements", q: "In C++, what is the 'Lifetime' of a static local variable?", opts: ["Only during function execution", "The duration of the program", "Until main() calls it again", "Until it is manually deleted"], ans: 1 },
+        { cat: "Elements", q: "Which of these is a 'Side Effect' of a function?", opts: ["Returning a value", "Modifying a global variable or reference argument", "Having parameters", "Calling a library function"], ans: 1 },
+        { cat: "Elements", q: "What does the 'inline' keyword suggest to the compiler?", opts: ["Run code faster", "Replace function call with actual code body", "Ignore parameters", "Make the function global"], ans: 1 },
+        { cat: "Elements", q: "A function prototype MUST include which of the following?", opts: ["Parameter names", "Variable names", "Data types of parameters", "The body"], ans: 2 },
+        { cat: "Elements", q: "Why is passing a large structure 'By Value' inefficient?", opts: ["It causes logic errors", "It creates a full copy in memory", "It deletes the original", "It requires cmath"], ans: 1 },
+        { cat: "Elements", q: "What is a 'Predicate Function'?", opts: ["A math function", "A function that returns a Boolean", "A void function", "A recursive function"], ans: 1 },
+        { cat: "Elements", q: "The 'Stack Frame' stores what information?", opts: ["Global data only", "Local variables and return addresses", "Function code body", "The hard drive path"], ans: 1 },
+        { cat: "Elements", q: "What happens if a non-void function reaches its end without a return statement?", opts: ["Returns 0", "Returns NULL", "Undefined behavior/Compilation Error", "Exits program"], ans: 2 },
+        { cat: "Elements", q: "Can a function be passed as an argument to another function?", opts: ["Yes (via pointers/functional)", "No", "Only in Python", "Only if it is void"], ans: 0 },
+        { cat: "Elements", q: "What is 'Coupling' in modular design?", opts: ["The size of a function", "The degree of dependency between modules", "The number of parameters", "Combining two variables"], ans: 1 },
+        { cat: "Elements", q: "What is 'Cohesion'?", opts: ["Connecting files", "How focused a function is on a single task", "Using global variables", "Fast execution"], ans: 1 },
+        { cat: "Elements", q: "A recursive function without a base case leads to...?", opts: ["A faster program", "Stack Overflow", "Logical True", "Syntax Error"], ans: 1 },
+        { cat: "Elements", q: "The 'Scope Resolution Operator' (::) is used to access...?", opts: ["Local variables", "Global variables hidden by local ones", "Private functions", "Library functions"], ans: 1 }
+    ];
+
+    let cur = 0; let score = 0; let attempts = 0;
+
+    function load() {
+        if(cur >= hardBank.length) {
+            document.getElementById('quiz-area').innerHTML = `<h2 style='text-align:center; color:#38bdf8;'>CHALLENGE COMPLETE</h2><p style='text-align:center;'>Mastery Score: ${score}/450</p><button class='option-btn' onclick='location.reload()' style='text-align:center'>REBOOT SYSTEM</button>`;
+            return;
+        }
+        attempts = 0;
+        const q = hardBank[cur];
+        document.getElementById('q-count').innerText = cur + 1;
+        document.getElementById('question-text').innerText = q.q;
+        const codeBox = document.getElementById('code-display');
+        if(q.code) { codeBox.innerText = q.code; codeBox.style.display="block"; }
+        else { codeBox.style.display="none"; }
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = "";
+        document.getElementById('feedback').innerText = "";
+        
+        q.opts.forEach((o, i) => {
+            const b = document.createElement('button');
+            b.className = "option-btn";
+            b.innerText = o;
+            b.onclick = () => check(i, b);
+            container.appendChild(b);
+        });
+    }
+
+    function check(idx, btn) {
+        const q = hardBank[cur];
+        const feedback = document.getElementById('feedback');
+        
+        if(idx === q.ans) {
+            btn.className = "option-btn correct-btn";
+            feedback.innerHTML = "SYSTEM VERIFIED: CORRECT.";
+            feedback.style.color = "#10b981";
+            score += (attempts === 0 ? 10 : 5);
+            document.getElementById('score').innerText = score;
+            cur++;
+            setTimeout(load, 1200);
+        } else {
+            attempts++;
+            if(attempts === 1) {
+                btn.className = "option-btn wrong-first";
+                feedback.innerHTML = "LOGIC BREACH. RETRY.";
+                feedback.style.color = "#f59e0b";
+            } else {
+                btn.className = "option-btn wrong-final";
+                feedback.innerHTML = "FAILED. TARGET: " + q.opts[q.ans];
+                feedback.style.color = "#ef4444";
+                cur++;
+                setTimeout(load, 2500);
+            }
+        }
+    }
+    load();
+</script>
+</body>
+</html>
